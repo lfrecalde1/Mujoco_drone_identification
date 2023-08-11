@@ -249,8 +249,8 @@ switch n
         close all
         ul_ref=0.2*sin(0.75*t).*cos(0.8*t)-0.15*cos(t);
         um_ref=0.4*cos(0.1*t)+0.3*cos(0.4*t);
-        un_ref=2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-        w_ref=1.7*cos(0.2*t)+0.2*sin(0.4*t);
+        un_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        w_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
         subplot(4,1,1)
         plot(ul_ref);
         subplot(4,1,2)
