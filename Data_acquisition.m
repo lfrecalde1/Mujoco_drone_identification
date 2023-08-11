@@ -32,16 +32,18 @@ h = zeros(7, length(t)+1);
 hp = zeros(6, length(t)+1);
 T = zeros(3, length(t));
 F = zeros(3, length(t));
+omega_ref = zeros(2, length(t));
 %% Get data system
 [h(:, 1), hp(:, 1)] = odometry(odom);
 
 for k=1:1:length(t)
     tic; 
-    %% SEND VALUES OF CONTROL ROBOT
+    %% Send control values to the robot
     send_velocities(robot_references, velmsg, [ul_ref(k), um_ref(k), un_ref(k), 0, 0 , w_ref(k)]);
     [F(:, k), T(:, k)] =  inputs_system(inputs);
+    [omega_ref(:, k)] = inputs_system_rate(inputs);
     
-    %% GET VALUES OF DRONE
+    %% Getas data from the drone
     [h(:, k+1), hp(:,k+1)] = odometry(odom);
     
     while(toc<ts)
@@ -52,4 +54,4 @@ send_velocities(robot_references, velmsg, [0, 0, 0, 0, 0 , 0])
 rosshutdown;
 
 %% Save Data System
-save("Data_identification.mat", "ts", "t", "ul_ref", "um_ref", "un_ref", "w_ref", "h", "hp", "T", "F")
+save("Data_identification.mat", "ts", "t", "ul_ref", "um_ref", "un_ref", "w_ref", "h", "hp", "T", "F", "omega_ref")
