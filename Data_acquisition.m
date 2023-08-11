@@ -3,8 +3,14 @@
 %% Clear Variables
 clc, clear all, close all;
 
+%% Definition Sample Time
+ts = 0.05;
+tfinal = 60;
+t = (0:ts:tfinal);
+
 %% Load Values of the desired Signals
-load('Signals.mat')
+n = 12;
+Signals = Velocities_data(12,t,1);
 
 %% Reference Signals
 ul_ref = Signals(1,:);
@@ -12,13 +18,9 @@ um_ref = Signals(2,:);
 un_ref = Signals(3,:);
 w_ref = Signals(4,:);
 
-%% Definition Sample Time
-ts = 0.05;
-t = time_simulation(ul_ref, ts);
-
 %% Ros Configuration
 rosshutdown
-rosinit('192.168.1.106', 'NodeHost', '192.168.1.106', 'Nodename', '/Matlab');
+rosinit('192.168.88.244', 'NodeHost', '192.168.88.244', 'Nodename', '/Matlab');
 
 %% Ros topics names
 robot_references = rospublisher('/cmd_vel');
