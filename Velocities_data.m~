@@ -252,10 +252,10 @@ switch n
         un_ref =zeros(1, length(t));
         w_ref = zeros(1, length(t));
         
-%         ul_ref=2.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-%         um_ref=2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-%         un_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-%         w_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        ul_ref=2.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        um_ref=2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        un_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        w_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
         subplot(4,1,1)
         plot(ul_ref);
         subplot(4,1,2)
