@@ -4,8 +4,8 @@
 clc, clear all, close all;
 
 %% Definition Sample Time
-ts = 0.05;
-tfinal = 60;
+ts = 0.025;
+tfinal = 12;
 t = (0:ts:tfinal);
 
 %% Load Values of the desired Signals
@@ -20,15 +20,16 @@ w_ref = Signals(4,:);
 
 %% Ros Configuration
 rosshutdown
-rosinit('192.168.88.244', 'NodeHost', '192.168.88.244', 'Nodename', '/Matlab');
+rosinit('192.168.1.106', 'NodeHost', '192.168.1.106', 'Nodename', '/Matlab');
 
 %% Ros topics names
 robot_references = rospublisher('/cmd_vel');
 velmsg = rosmessage(robot_references);
 odom = rossubscriber('/odom');
 inputs = rossubscriber('/input_ref');
+send_velocities(robot_references, velmsg, [0, 0, 0, 0, 0 , 0])
 %% Initial Conditions System
-h = zeros(7, length(t)+1);
+h = zeros(10, length(t)+1);
 hp = zeros(6, length(t)+1);
 T = zeros(3, length(t));
 F = zeros(3, length(t));

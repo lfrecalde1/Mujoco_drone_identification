@@ -25,6 +25,12 @@ tz = T(3, :);
 wx_ref = omega_ref(1, :);
 wy_ref = omega_ref(2, :);
 
+%% Angles velocities
+for k =1:length(t)
+[euler_p(:, k)] = Euler_p(hp(4:6, k),h(8:10, k));
+end
+
+%% Images System
 figure
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
@@ -70,7 +76,7 @@ xlim([0 t(end)])
 
 set(gcf, 'Color', 'w'); % Sets axes background
 export_fig Velocities Body.pdf -q101
-
+% 
 figure
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
@@ -113,7 +119,7 @@ xlim([0 t(end)])
 set(gcf, 'Color', 'w'); % Sets axes background
 export_fig Forces_and_torque.pdf -q101
 
-
+% 
 figure
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
@@ -156,6 +162,8 @@ xlim([0 t(end)])
 set(gcf, 'Color', 'w'); % Sets axes background
 export_fig Rates_and_velocity.pdf -q101
 
+
+
 figure
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
@@ -164,7 +172,8 @@ set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(4,1,1)
 plot(t(1:length(ul_ref)),wy_ref(1,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-legend({'$w_{yr}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(t(1:length(ul_ref)),h(9,1:length(t)),'--','Color',[226,76,44]/255,'linewidth',1); hold on
+legend({'$\theta_d$','$\theta$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Identification signals and real Signals}$','Interpreter','latex','FontSize',9);
 ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
@@ -173,7 +182,8 @@ xlim([0 t(end)])
 subplot(4,1,2)
 plot(t(1:length(ul_ref)),wx_ref(1,1:length(t)),'-','Color',[46,188,89]/255,'linewidth',1); hold on
 grid on;
-legend({'$w_{xr}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(t(1:length(ul_ref)),h(8,1:length(t)),'--','Color',[46,188,89]/255,'linewidth',1); hold on
+legend({'$\phi_d$','$\phi$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
@@ -196,4 +206,33 @@ xlabel('$\textrm{Time}[s]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
 
 set(gcf, 'Color', 'w'); % Sets axes background
-export_fig Forces_and_torque_rates.pdf -q101
+export_fig Forces_and_torque_angles.pdf -q101
+
+
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+subplot(2,1,1)
+plot(t(1:length(ul_ref)),euler_p(2,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(t(1:length(ul_ref)),h(9,1:length(t)),'--','Color',[226,76,44]/255,'linewidth',1); hold on
+plot(t(1:length(ul_ref)),q(1,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'$\dot{\theta}$','$\theta$','$q$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+title('$\textrm{Identification signals and real Signals}$','Interpreter','latex','FontSize',9);
+ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
+xlim([0 t(end)])
+
+subplot(2,1,2)
+plot(t(1:length(ul_ref)),euler_p(1,1:length(t)),'-','Color',[46,188,89]/255,'linewidth',1); hold on
+grid on;
+plot(t(1:length(ul_ref)),h(8,1:length(t)),'--','Color',[46,188,89]/255,'linewidth',1); hold on
+plot(t(1:length(ul_ref)),p(1,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'$\dot{\phi}$','$\phi$','$p$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
+xlim([0 t(end)])
+

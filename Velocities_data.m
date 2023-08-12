@@ -247,9 +247,9 @@ switch n
         %%
     case 12
         close all
-        ul_ref=2.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-        um_ref= zeros(1, length(t));
-        un_ref =zeros(1, length(t));
+        ul_ref = zeros(1, length(t));
+        um_ref = zeros(1, length(t));
+        un_ref = [1*ones(1, 50), 0*ones(1,200), 2*ones(1, 200), -2*ones(1, 31)];
         w_ref = zeros(1, length(t));
         
 %         ul_ref=2.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
