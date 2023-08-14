@@ -5,7 +5,7 @@ clc, clear all, close all;
 
 %% Definition Sample Time
 ts = 0.025;
-tfinal = 12;
+tfinal = 10;
 t = (0:ts:tfinal);
 
 %% Load Values of the desired Signals
@@ -20,7 +20,7 @@ w_ref = Signals(4,:);
 
 %% Ros Configuration
 rosshutdown
-rosinit('192.168.1.106', 'NodeHost', '192.168.1.106', 'Nodename', '/Matlab');
+rosinit('192.168.88.244', 'NodeHost', '192.168.88.244', 'Nodename', '/Matlab');
 
 %% Ros topics names
 robot_references = rospublisher('/cmd_vel');

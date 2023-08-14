@@ -1,0 +1,23 @@
+function [cost] = funcion_costo_theta(x, N, u_ref, u, u_p, u_pp,  tau)
+                                             
+he = [];
+for k=1:N
+    %% Get Values for the PID
+    theta_ref = u_ref(2,k);
+    theta = u(2,k);
+    theta_p = u_p(2,k);
+    theta_pp = u_pp(2, k);
+    ty = tau(2, k);
+    
+    phi_p = u_p(1, k);
+    psi_p = u_p(3, k);
+    
+    %% Aproximation
+    ty_e =  x(1)*(theta_ref) - x(2)*(theta)  +x(3)*theta_p + x(4)*theta_pp;
+    theta_pp_estimate = (-x(5)/x(6))*phi_p*psi_p - ()
+
+    %% Error Vector
+    he = [he; ty_e - ty];
+end
+cost = norm(he,2);
+end
