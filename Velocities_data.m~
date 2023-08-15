@@ -247,10 +247,10 @@ switch n
         %%
     case 12
         close all
-        ul_ref = [0*ones(1, 50), 1*ones(1,150), 0*ones(1,150) -1*ones(1, 151)];
-        um_ref = [0*ones(1, 50), -2*ones(1,150), -0*ones(1,150) 2*ones(1, 151)];
+        ul_ref = [0*ones(1, 50), 1*ones(1,150), 0*ones(1,150) -1*ones(1, 150)];
+        um_ref = [1*ones(1, 50), 0*ones(1,150), -2*ones(1,150) -1*ones(1, 150)];
         un_ref = zeros(1, length(t));
-        w_ref = [0*ones(1, 50), -0.3*ones(1,100), -0*ones(1,100) 0.3*ones(1, 100), -0.1*ones(1,100),  0.1*ones(1, 51),];
+        w_ref = [0*ones(1, 50), -1*ones(1,200), 1*ones(1, 200), 0*ones(1, 51)];
 %         ul_ref=2.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
 %         um_ref=2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
 %         un_ref = 2.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);

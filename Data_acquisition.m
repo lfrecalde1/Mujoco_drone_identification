@@ -4,8 +4,8 @@
 clc, clear all, close all;
 
 %% Definition Sample Time
-ts = 0.025;
-tfinal = 10;
+ts = 0.04;
+tfinal = 20;
 t = (0:ts:tfinal);
 
 %% Load Values of the desired Signals
@@ -20,7 +20,7 @@ w_ref = Signals(4,:);
 
 %% Ros Configuration
 rosshutdown
-rosinit('192.168.88.244', 'NodeHost', '192.168.88.244', 'Nodename', '/Matlab');
+rosinit('192.168.1.106', 'NodeHost', '192.168.1.106', 'Nodename', '/Matlab');
 
 %% Ros topics names
 robot_references = rospublisher('/cmd_vel');
@@ -37,19 +37,28 @@ omega_ref = zeros(2, length(t));
 %% Get data system
 [h(:, 1), hp(:, 1)] = odometry(odom);
 
+%% Init System
+for i = 1:200
+    tic;
+    send_velocities(robot_references, velmsg, [0,0, 0, 0, 0 , 0]);
+    [aux_h, aux_hp] = odometry(odom);
+    while(toc<ts)
+    end
+end
+
 for k=1:1:length(t)
     tic; 
     %% Send control values to the robot
     send_velocities(robot_references, velmsg, [ul_ref(k), um_ref(k), un_ref(k), 0, 0 , w_ref(k)]);
-    [F(:, k), T(:, k)] =  inputs_system(inputs);
-    [omega_ref(:, k)] = inputs_system_rate(inputs);
     
-    %% Getas data from the drone
-    [h(:, k+1), hp(:,k+1)] = odometry(odom);
     
     while(toc<ts)
+        [F(:, k), T(:, k)] =  inputs_system(inputs);
+        [omega_ref(:, k)] = inputs_system_rate(inputs);
     end
-    toc;
+    %% Getas data from the drone
+    [h(:, k+1), hp(:,k+1)] = odometry(odom);
+    t_real(k) = toc;
 end
 send_velocities(robot_references, velmsg, [0, 0, 0, 0, 0 , 0])
 rosshutdown;
