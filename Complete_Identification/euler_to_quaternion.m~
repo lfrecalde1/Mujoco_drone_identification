@@ -1,0 +1,9 @@
+function [quaternion] = euler_to_quaternion(euler)
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+quaternion = zeros(4,length(euler));
+for k = 1:length(euler)
+   quaternion(:, k) =  eul2quat([],'ZYX');
+end
+end
+

@@ -41,14 +41,10 @@ u_ref = [ul_ref;um_ref;un_ref];
 u_ref_f = [ul_ref_f; um_ref_f; un_ref_f];
 
 
-
 %% Real velocities Body
 ul = hp(1, :);
 um = hp(2, :);
 un = hp(3, :);
-
-
-
 
 %% General Vector Velocities Body
 u = [ul; um; un];
