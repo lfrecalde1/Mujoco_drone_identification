@@ -8,13 +8,13 @@ des =1;
 
 %% Load Data System Pose
 h = h(:, des:end-1);
-quaternio_system = h(4:7, :);
+
 %% Load Data Velocities
 hp = hp(:, des:end-1);
 p = hp(4, :);
 q = hp(5, :);
 r = hp(6, :);
-omega = [p;q;r];
+
 %% Load Time
 t = t(:,des:end);
 
@@ -114,8 +114,8 @@ Tau = [tx;ty;tz];
 %% Reference Angles
 phi_ref = omega_ref(1, :);
 theta_ref = omega_ref(2, :);
-
-
+euler_ref = [phi_ref;...
+             theta_ref];
 %% Real Angles System
 phi = h(8, :);
 theta = h(9,:);
@@ -124,8 +124,7 @@ psi = h(10, :);
 euler = [phi;...
          theta;...
           psi];
-      
-quaternion_check = euler_to_quaternion(euler);
+
 %% Angles velocities
 for k =1:length(hp)
 [euler_p(:, k)] = Euler_p(hp(4:6, k),h(8:10, k));
@@ -134,24 +133,6 @@ end
 phi_p = euler_p(1, :);
 theta_p = euler_p(2, :);
 psi_p = euler_p(3, :);
-
-%% Initial COnditions Psi
-psi_ref(1, 1) = h(10, 1);  
-
-%% Psi during the experiment
-for k = 1:length(t)-1
-    psi_ref(1, k+1) = psi_ref(1, k) + ts*w_ref(1, k);
-
-end
-
-%% General Euler Ref
-euler_ref = [phi_ref;...
-             theta_ref;...
-             psi_ref];
- 
-
-%% General Quaternion Ref
-quaternion_ref = euler_to_quaternion(euler_ref);
 %% Angular Aceleration theta
 
 for k=1:length(t)
@@ -171,18 +152,21 @@ euler_pp = [phi_pp;...
              psi_pp];
 
 %% generalized Data system
-X = [quaternio_system(1:4,:);...
-     omega(1:3,:)];
+X = [euler(1:3,:);...
+     euler_p(1:3,:)];
 
 %% Control Signal
-U_ref = [quaternion_ref(1:4, :);...
+U_ref = [phi_ref;...
+        theta_ref;...
          w_ref];
 
 %% Rearrange data in order to develp DMD ext
 
-X1 = X(:,1:end-1);
-X2 = X(:,2:end);
-Gamma = U_ref(:,1:end-1);
+X1 = [X(:,2:end-1);...
+      X(:,1:end-2)];
+  
+X2 = X(:,3:end);
+Gamma = U_ref(:,2:end-1);
 
 %% Parameter matrices
 alpha = 0.01;
@@ -198,77 +182,59 @@ options = optimset('Display','iter',...
     'TolConSQP', 2e-8);
 
 %% Initial Condition Optimization problem
-x0=ones(1,84).*rand(1,84);
-f_obj1 = @(x)  funcion_costo__DMD_extend_quat(x, N, X1, X2, Gamma, alpha);
-
+x0=ones(1,89).*rand(1,89);
+f_obj1 = @(x)  funcion_costo__DMD_extend_delay(x, N, X1, X2, Gamma, alpha);
+tic
 %% Optimization Problem
 x = fmincon(f_obj1,x0,[],[],[],[],[],[],[],options);
 chi = x;
-
+toc
 %% Model Of the system
-A = [x(1), x(2), x(3), x(4), x(5), x(6), x(7);...
-     x(8), x(9), x(10), x(11), x(12), x(13), x(14) ;...
-     x(15), x(16), x(17), x(18), x(19), x(20), x(21);...
-     x(22), x(23), x(24), x(25), x(26), x(27), x(28);...
-     x(29), x(30), x(31), x(32), x(33), x(34), x(35);...
-     x(36), x(37), x(38), x(39), x(40), x(41), x(42);...
-     x(43), x(44), x(45), x(46), x(47), x(48), x(49)];
+A = [ x(1), x(2),  x(3),  x(4),  x(5),  x(6),  x(7),  x(8),  x(9),  x(10), x(11), x(12);...
+     x(13), x(14), x(15), x(16), x(17), x(18), x(19), x(20), x(21), x(22), x(23), x(24);...
+     x(25), x(26), x(27), x(28), x(29), x(30), x(31), x(32), x(33), x(34), x(35), x(36);...
+     x(37), x(38), x(39), x(40), x(41), x(42), x(43), x(44), x(45), x(46), x(47), x(48);...
+     x(49), x(50), x(51), x(52), x(53), x(54), x(55), x(56), x(57), x(58), x(59), x(60);...
+     x(61), x(62), x(63), x(64), x(65), x(66), x(67), x(68), x(69), x(70), x(71), x(71);...
+     ];
  
-B = [x(50), x(51), x(52), x(53), x(54);...
-     x(55), x(56), x(57), x(58), x(59);...
-     x(60), x(61), x(62), x(63), x(64);...
-     x(65), x(66), x(67), x(68), x(69);...
-     x(70), x(71), x(72), x(73), x(74);...
-     x(75), x(76), x(77), x(78), x(79);...
-     x(80), x(81), x(82), x(83), x(84)];
- 
-v_estimate(:, 1) = X(:, 1);
-for k= 1:length(t)
-    v_estimate(:, k+1) = A*v_estimate(:, k)+B*U_ref(:,k);
-end
+B = [x(72), x(73), x(74);...
+     x(75), x(76), x(77);...
+     x(78), x(79), x(80);...
+     x(81), x(82), x(83);...
+     x(84), x(85), x(86);...
+     x(87), x(88), x(89)];
 
+
+v_estimate_1 = X1(:, 1);
+for k= 1:length(X2)
+    v_estimate(:, k) = A*v_estimate_1 + B*U_ref(:,k);
+    v_estimate_1 =  [ v_estimate(:, k); v_estimate_1(1:6)];
+end
 
 figure
 set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
-subplot(4,1,1)
-plot(t(1:length(ul_ref)),h(4,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(t(1:length(ul_ref)),quaternion_check(1,1:length(t)),'--','Color',[150,76,44]/255,'linewidth',1); hold on
+subplot(2,1,1)
+plot(t(1:length(X2)),X2(1,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+plot(t(1:length(X2)),v_estimate(1,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
-plot(t(1:length(ul_ref)),quaternion_check(1,1:length(t)),'--','Color',[150,76,44]/255,'linewidth',1); hold on
-legend({'$q_w$', '$\hat{q}_w$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'${{\psi}}$','$\hat{\psi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Identification signals and real Signals}$','Interpreter','latex','FontSize',9);
+ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
 
-subplot(4,1,2)
-plot(t(1:length(ul_ref)),h(5,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+subplot(2,1,2)
+plot(t(1:length(X2)),X2(2,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(t(1:length(ul_ref)),quaternion_check(2,1:length(t)),'--','Color',[150,76,44]/255,'linewidth',1); hold on
-legend({'${q_x}$', '$\hat{q}_x$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(t(1:length(X2)),v_estimate(2,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${\theta}$','$\hat{\theta}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
+ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
-
-subplot(4,1,3)
-plot(t(1:length(ul_ref)),h(6,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-grid on;
-plot(t(1:length(ul_ref)),quaternion_check(3,1:length(t)),'--','Color',[150,76,44]/255,'linewidth',1); hold on
-legend({'$q_y$', '$\hat{q}_y$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-title('$\textrm{Identification signals and real Signals}$','Interpreter','latex','FontSize',9);
-xlim([0 t(end)])
-
-subplot(4,1,4)
-plot(t(1:length(ul_ref)),h(7,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-grid on;
-plot(t(1:length(ul_ref)),quaternion_check(4,1:length(t)),'--','Color',[150,76,44]/255,'linewidth',1); hold on
-legend({'${q_z}$', '${q_z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-xlim([0 t(end)])
-
 set(gcf, 'Color', 'w'); % Sets axes background
-export_fig quaternions.pdf -q101
-
+export_fig omega_estimation.pdf -q101
 
